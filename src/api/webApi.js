@@ -3,7 +3,7 @@ import Notiflix from 'notiflix';
 
 export const itemPerPage = 40;
 
-const API_KEY = '30087713-0176780a5d439b6fbf7b0e04e';
+const API_KEY = '30123371-8b3daf4c73393ab79b744939e';
 const searchParams = new URLSearchParams({
   key: API_KEY,
   image_type: 'photo',
