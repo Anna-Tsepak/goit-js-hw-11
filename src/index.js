@@ -11,6 +11,8 @@ const totalPages = Math.ceil(500 / itemPerPage);
 let page = 1;
 let searchValue = '';
 
+const lightbox = new SimpleLightbox('.gallery a');
+
 formEl.addEventListener('submit', onSubmit);
 
 async function loadMoreCards(searchValue) {
@@ -18,6 +20,9 @@ async function loadMoreCards(searchValue) {
   const data = await getPhoto(searchValue, page);
 
   createGalleryMarkup(data.hits);
+  lightbox.refresh();
+
+  const totalPages = Math.ceil(data.totalHits / itemPerPage);
 
   if (page === totalPages) {
     addClass('visually-hidden');
@@ -30,9 +35,6 @@ async function mountData(searchValue) {
 
     removeClass('visually-hidden');
 
-    moreBtn.removeEventListener('click', moreBtnClbc);
-    moreBtn.addEventListener('click', moreBtnClbc);
-
     if (data.hits.length === 0) {
       addClass('visually-hidden');
       Notiflix.Notify.failure(
@@ -41,11 +43,11 @@ async function mountData(searchValue) {
     } else {
       Notiflix.Notify.info(`Hooray! We found ${data.totalHits} images.`);
       createGalleryMarkup(data.hits);
-      doLightbox();
+      lightbox.refresh();   
     }
   } catch (error) {
     addClass('visually-hidden');
-    console.log('errooooor', error);
+    Notiflix.Notify.failure(error.message);
   }
 }
 
@@ -87,29 +89,32 @@ function createGalleryMarkup(cardsArr) {
   galleryEl.insertAdjacentHTML('beforeend', markup);
 }
 
-function doLightbox() {
-  const linkImg = document.querySelector('.link-img');
-  linkImg.addEventListener('click', openModal);
+// function doLightbox() {
+//   const linkImg = document.querySelector('.link-img');
+//   linkImg.addEventListener('click', openModal);
 
-  function openModal(event) {
-    event.preventDefault();
-  }
+//   function openModal(event) {
+//     event.preventDefault();
+//   }
 
-  let lightbox = new SimpleLightbox('.photo-card a', {
-    captionDelay: 250,
-  });
-}
+//   let lightbox = new SimpleLightbox('.photo-card a', {
+//     captionDelay: 250,
+//   });
+// }
 
 function onSubmit(event) {
   event.preventDefault();
 
   clearMarkup(galleryEl);
 
-  searchValue = event.currentTarget[0].value;
+const { searchQuery } = event.currentTarget.elements;
+  const searchQueryVal = searchQuery.value.trim();
 
-  console.log('searchValue', searchValue);
+  if (!searchQueryVal) {
+    return;
+  }
 
-  mountData(searchValue);
+  mountData(searchQueryVal);
 }
 
 function clearMarkup(element) {

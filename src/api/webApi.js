@@ -16,13 +16,9 @@ export const BASE_URL = `https://pixabay.com/api/?${searchParams}`;
 
 export async function getPhoto(search, page) {
   try {
-    if (!search.trim()) {
-      Notiflix.Notify.failure('Please fill in the search field');
-      return;
-    }
     const response = await axios.get(`${BASE_URL}&page=${page}&q=${search}`);
     return response.data;
-  } catch (error) {
-    Notiflix.Notify.failure(error.message);
+  }  catch(error) {
+    throw new Error(error);
   }
 }
